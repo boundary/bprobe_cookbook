@@ -23,3 +23,5 @@ set[:boundary][:bprobe][:etc][:path] = "/etc/bprobe"
 
 set[:boundary][:bprobe][:collector][:hostname] = "collector.boundary.com"
 set[:boundary][:bprobe][:collector][:port] = "4740"
+
+set_unless[:boundary][:bprobe][:tags] = []

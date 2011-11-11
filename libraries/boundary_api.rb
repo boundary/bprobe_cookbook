@@ -25,77 +25,72 @@ require 'base64'
 module Boundary
   module API
 
-    def auth_encode(new_resource)
-      auth = Base64.encode64("#{new_resource.username}:#{new_resource.apikey}").strip
-      auth.gsub("\n","")
-    end
+    def create_meter_request(new_resource)
+      begin
+        url = build_url(new_resource, :create)
+        headers = generate_headers(new_resource)
+        body = {:name => new_resource.name}.to_json
 
-    def build_url(new_resource, action)
-      case action
-      when :create
-        "https://#{node[:boundary][:api][:hostname]}/meters"
-      when :search
-        "https://#{node[:boundary][:api][:hostname]}/meters?name=#{new_resource.name}"
-      when :certificates
-        meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
-      when :delete
-        meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+        Chef::Log.info("Creating meter [#{new_resource.name}]")
+        response = http_post_request(url, headers, body)
+
+      rescue Exception => e
+        Chef::Log.error("Could not create meter [#{new_resource.name}], failed with #{e}")
       end
     end
 
-    def meter_exists?(new_resource)
-      begin
-        url = build_url(new_resource, :search)
-        auth = auth_encode(new_resource)
-        headers = {"Authorization" => "Basic #{auth}", "Content-Type" => "application/json"}
+    def apply_meter_tags(new_resource)
+      Chef::Log.debug("This meter currently has these tags [#{node[:boundary][:bprobe][:tags]}]")
 
-        response = http_get_request(url, headers)
+      tags = new_resource.tags - node[:boundary][:bprobe][:tags]
 
-        if response
-          body = JSON.parse(response.body)
+      if tags.length > 0
+        begin
+          url = build_url(new_resource, :tags)
+          headers = generate_headers(new_resource)
 
-          if body == []
-            false
-          else
-            true
+          Chef::Log.info("Applying meter tags [#{new_resource.tags}]")
+
+          tags.each do |tag|
+            http_put_request("#{url}/#{tag}", headers, "")
           end
-        else
-          Chef::Log.error("Could not determine if meter exists (nil response)!")
-          nil
+        rescue Exception => e
+          Chef::Log.error("Could not apply meter tag, failed with #{e}")
         end
-      rescue Exception => e
-        Chef::Log.error("Could not determine if meter exists, failed with #{e}")
-        nil
+      else
+        Chef::Log.debug("No meter tags to apply.")
       end
     end
 
-    def get_meter_id(new_resource)
+    def delete_meter_request(new_resource)
       begin
-        url = build_url(new_resource, :search)
-        auth = auth_encode(new_resource)
-        headers = {"Authorization" => "Basic #{auth}", "Content-Type" => "application/json"}
+        url = build_url(new_resource, :delete)
+        headers = generate_headers(new_resource)
 
-        response = http_get_request(url, headers)
-
-        if response
-          body = JSON.parse(response.body)
-          body[0]["id"]
-        else
-          Chef::Log.error("Could not get meter id (nil response)!")
-          nil
-        end
+        Chef::Log.info("Deleting meter [#{new_resource.name}]")
+        response = http_delete_request(url, headers)
 
       rescue Exception => e
-        Chef::Log.error("Could not get meter id, failed with #{e}")
-        nil
+        Chef::Log.error("Could not delete meter [#{new_resource.name}], failed with #{e}")
+      end
+    end
+
+    def save_meter_tags_attribute(new_resource)
+      if Chef::Config[:solo]
+        Chef::Log.debug("chef-solo run, not attempting to save tags attribute.")
+      else
+        begin
+          node.set[:boundary][:bprobe][:tags] = new_resource.tags
+          node.save
+        rescue Exception => e
+          Chef::Log.error("Could not save meter tags as node attribute, failed with #{e}")
+        end
       end
     end
 
     def save_meter_id_attribute(new_resource)
       if Chef::Config[:solo]
-        Chef::Log.debug("chef-solo run, not attempting to save attribute.")
+        Chef::Log.debug("chef-solo run, not attempting to save id attribute.")
       else
         begin
           meter_id = get_meter_id(new_resource)
@@ -125,6 +120,83 @@ module Boundary
         rescue Exception => e
           Chef::Log.error("Could not delete meter id from node attributes, failed with #{e}")
         end
+      end
+    end
+
+    def generate_headers(new_resource)
+      auth = auth_encode(new_resource)
+      {"Authorization" => "Basic #{auth}", "Content-Type" => "application/json"}
+    end
+
+    def auth_encode(new_resource)
+      auth = Base64.encode64("#{new_resource.username}:#{new_resource.apikey}").strip
+      auth.gsub("\n","")
+    end
+
+    def build_url(new_resource, action)
+      case action
+      when :create
+        "https://#{node[:boundary][:api][:hostname]}/meters"
+      when :search
+        "https://#{node[:boundary][:api][:hostname]}/meters?name=#{new_resource.name}"
+      when :meter
+        meter_id = get_meter_id(new_resource)
+        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+      when :certificates
+        meter_id = get_meter_id(new_resource)
+        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+      when :delete
+        meter_id = get_meter_id(new_resource)
+        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+      when :tags
+        meter_id = get_meter_id(new_resource)
+        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}/tags"
+      end
+    end
+
+    def meter_exists?(new_resource)
+      begin
+        url = build_url(new_resource, :search)
+        headers = generate_headers(new_resource)
+
+        response = http_get_request(url, headers)
+
+        if response
+          body = JSON.parse(response.body)
+
+          if body == []
+            false
+          else
+            true
+          end
+        else
+          Chef::Log.error("Could not determine if meter exists (nil response)!")
+          nil
+        end
+      rescue Exception => e
+        Chef::Log.error("Could not determine if meter exists, failed with #{e}")
+        nil
+      end
+    end
+
+    def get_meter_id(new_resource)
+      begin
+        url = build_url(new_resource, :search)
+        headers = generate_headers(new_resource)
+
+        response = http_get_request(url, headers)
+
+        if response
+          body = JSON.parse(response.body)
+          body[0]["id"]
+        else
+          Chef::Log.error("Could not get meter id (nil response)!")
+          nil
+        end
+
+      rescue Exception => e
+        Chef::Log.error("Could not get meter id, failed with #{e}")
+        nil
       end
     end
 
@@ -171,6 +243,22 @@ module Boundary
       Chef::Log.debug("Status: #{response.status}")
 
       if bad_response?(:post, url, response)
+        nil
+      else
+        response
+      end
+    end
+
+    def http_put_request(url, headers, body)
+      Chef::Log.debug("Url: #{url}")
+      Chef::Log.debug("Headers: #{headers}")
+
+      response = Excon.put(url, :headers => headers, :body => body)
+
+      Chef::Log.debug("Body: #{response.body}")
+      Chef::Log.debug("Status: #{response.status}")
+
+      if bad_response?(:put, url, response)
         nil
       else
         response

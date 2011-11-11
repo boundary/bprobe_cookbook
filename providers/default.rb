@@ -27,6 +27,9 @@ action :create do
     create_meter_request(new_resource)
     save_meter_id_attribute(new_resource)
   end
+
+  apply_meter_tags(new_resource)
+  save_meter_tags_attribute(new_resource)
 end
 
 action :delete do
@@ -35,36 +38,5 @@ action :delete do
     delete_meter_id_attribute
   else
     Chef::Log.debug("Boundary meter doesn't exist, not deleting.")
-  end
-end
-
-private
-
-def create_meter_request(new_resource)
-  begin
-    url = build_url(new_resource, :create)
-    auth = auth_encode(new_resource)
-    headers = {"Authorization" => "Basic #{auth}", "Content-Type" => "application/json"}
-    body = {:name => new_resource.name}.to_json
-          
-    Chef::Log.info("Creating meter [#{new_resource.name}]")
-    response = http_post_request(url, headers, body)
-      
-  rescue Exception => e
-    Chef::Log.error("Could not create meter [#{new_resource.name}], failed with #{e}")
-  end
-end
-
-def delete_meter_request(new_resource)
-  begin
-    url = build_url(new_resource, :delete)
-    auth = auth_encode(new_resource)
-    headers = {"Authorization" => "Basic #{auth}"}
-  
-    Chef::Log.info("Deleting meter [#{new_resource.name}]")
-    response = http_delete_request(url, headers)
-      
-  rescue Exception => e
-    Chef::Log.error("Could not delete meter [#{new_resource.name}], failed with #{e}")
   end
 end
