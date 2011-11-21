@@ -28,7 +28,7 @@ module Boundary
     def create_meter_request(new_resource)
       begin
         url = build_url(new_resource, :create)
-        headers = generate_headers(new_resource)
+        headers = generate_headers()
         body = {:name => new_resource.name}.to_json
 
         Chef::Log.info("Creating meter [#{new_resource.name}]")
@@ -47,7 +47,7 @@ module Boundary
       if tags.length > 0
         begin
           url = build_url(new_resource, :tags)
-          headers = generate_headers(new_resource)
+          headers = generate_headers()
 
           Chef::Log.info("Applying meter tags [#{new_resource.tags}]")
 
@@ -65,7 +65,7 @@ module Boundary
     def delete_meter_request(new_resource)
       begin
         url = build_url(new_resource, :delete)
-        headers = generate_headers(new_resource)
+        headers = generate_headers()
 
         Chef::Log.info("Deleting meter [#{new_resource.name}]")
         response = http_delete_request(url, headers)
@@ -123,41 +123,41 @@ module Boundary
       end
     end
 
-    def generate_headers(new_resource)
-      auth = auth_encode(new_resource)
+    def generate_headers()
+      auth = auth_encode()
       {"Authorization" => "Basic #{auth}", "Content-Type" => "application/json"}
     end
 
-    def auth_encode(new_resource)
-      auth = Base64.encode64("#{new_resource.apikey}:").strip
+    def auth_encode()
+      auth = Base64.encode64("#{node[:boundary][:api][:key]}:").strip
       auth.gsub("\n","")
     end
 
     def build_url(new_resource, action)
       case action
       when :create
-        "https://#{node[:boundary][:api][:hostname]}/meters"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters"
       when :search
-        "https://#{node[:boundary][:api][:hostname]}/meters?name=#{new_resource.name}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters?name=#{new_resource.name}"
       when :meter
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}"
       when :certificates
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}"
       when :delete
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}"
       when :tags
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/meters/#{meter_id}/tags"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}/tags"
       end
     end
 
     def meter_exists?(new_resource)
       begin
         url = build_url(new_resource, :search)
-        headers = generate_headers(new_resource)
+        headers = generate_headers()
 
         response = http_get_request(url, headers)
 
@@ -170,32 +170,37 @@ module Boundary
             true
           end
         else
-          Chef::Log.error("Could not determine if meter exists (nil response)!")
-          nil
+          Chef::Application.fatal!("Could not determine if meter exists (nil response)!")
         end
       rescue Exception => e
-        Chef::Log.error("Could not determine if meter exists, failed with #{e}")
-        nil
+        Chef::Application.fatal!("Could not determine if meter exists, failed with #{e}")
       end
     end
 
     def get_meter_id(new_resource)
       begin
         url = build_url(new_resource, :search)
-        headers = generate_headers(new_resource)
+        headers = generate_headers()
 
         response = http_get_request(url, headers)
 
         if response
           body = JSON.parse(response.body)
-          body[0]["id"]
+          if body[0]
+            if body[0]["id"]
+              body[0]["id"]
+            else
+              Chef::Application.fatal!("Could not get meter id (nil response)!")
+            end
+          else
+            Chef::Application.fatal!("Could not get meter id (nil response)!")
+          end
         else
-          Chef::Log.error("Could not get meter id (nil response)!")
-          nil
+          Chef::Application.fatal!("Could not get meter id (nil response)!")
         end
 
       rescue Exception => e
-        Chef::Log.error("Could not get meter id, failed with #{e}")
+        Chef::Application.fatal!("Could not get meter id, failed with #{e}")
         nil
       end
     end
@@ -267,7 +272,7 @@ module Boundary
 
     def bad_response?(method, url, response)
       if response.status >= 400
-        Chef::Log.error("Got a #{response.status} for #{method} to #{url}")
+        Chef::Application.fatal!("Got a #{response.status} for #{method} to #{url}")
         true
       else
         false

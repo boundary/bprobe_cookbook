@@ -24,17 +24,17 @@ action :install do
   service "bprobe" do
     action [ :nothing ]
   end
-  
+
   download_certificate_request(new_resource)
   download_key_request(new_resource)
 end
 
 action :delete do
   files = [
-    "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem", 
+    "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem",
     "#{node[:boundary][:bprobe][:etc][:path]}/key.pem"
   ]
-  
+
   files.each do |file|
     file file do
       action :delete
@@ -49,12 +49,12 @@ def download_certificate_request(new_resource)
     Chef::Log.debug("Certificate file already exists, not downloading.")
   else
     begin
-      auth = auth_encode(new_resource)
+      auth = auth_encode()
       base_url = build_url(new_resource, :certificates)
       headers = {"Authorization" => "Basic #{auth}"}
-      
+
       cert_response = http_get_request("#{base_url}/cert.pem", headers)
-      
+
       if cert_response
         file "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem" do
           mode 0600
@@ -77,12 +77,12 @@ def download_key_request(new_resource)
     Chef::Log.debug("Key file already exists, not downloading.")
   else
     begin
-      auth = auth_encode(new_resource)
+      auth = auth_encode()
       base_url = build_url(new_resource, :certificates)
       headers = {"Authorization" => "Basic #{auth}"}
-      
+
       key_response = http_get_request("#{base_url}/key.pem", headers)
-      
+
       if key_response
         file "#{node[:boundary][:bprobe][:etc][:path]}/key.pem" do
           mode 0600

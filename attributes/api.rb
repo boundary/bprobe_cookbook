@@ -18,5 +18,6 @@
 # limitations under the License.
 #
 
-set_unless[:boundary][:api][:hostname] = "api.boundary.com"
-set_unless[:boundary][:api][:key] = "yourkey"
+set[:boundary][:api][:hostname] = "api.boundary.com"
+set[:boundary][:api][:id] = "yourid"
+set[:boundary][:api][:key] = "yourkey"

@@ -21,4 +21,3 @@
 actions :install, :delete
 
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
-attribute :apikey, :kind_of => String, :required => true
