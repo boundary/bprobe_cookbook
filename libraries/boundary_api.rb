@@ -129,7 +129,7 @@ module Boundary
     end
 
     def auth_encode(new_resource)
-      auth = Base64.encode64("#{new_resource.username}:#{new_resource.apikey}").strip
+      auth = Base64.encode64("#{new_resource.apikey}:").strip
       auth.gsub("\n","")
     end
 

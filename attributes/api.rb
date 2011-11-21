@@ -19,5 +19,4 @@
 #
 
 set_unless[:boundary][:api][:hostname] = "api.boundary.com"
-set_unless[:boundary][:api][:username] = "your@email.com"
 set_unless[:boundary][:api][:key] = "yourkey"

@@ -24,7 +24,6 @@ include_recipe "bprobe::dependencies"
 # create the meter in the boundary api
 bprobe node[:fqdn] do
   action :create
-  username node[:boundary][:api][:username]
   apikey node[:boundary][:api][:key]
 end
 
@@ -40,7 +39,6 @@ end
 # download and install the meter cert and key files
 bprobe_certificates node[:fqdn] do
   action :install
-  username node[:boundary][:api][:username]
   apikey node[:boundary][:api][:key]
 end
 
@@ -49,7 +47,7 @@ end
 package "bprobe" do
   action :upgrade
 end
-  
+
 # start the bprobe service
 service "bprobe" do
   supports value_for_platform(
@@ -59,7 +57,7 @@ service "bprobe" do
   )
   action [ :start, :enable ]
 end
-  
+
 # enforce the ca cert
 cookbook_file "#{node[:boundary][:bprobe][:etc][:path]}/ca.pem" do
   source "ca.pem"
