@@ -18,6 +18,6 @@
 # limitations under the License.
 #
 
-set[:boundary][:api][:hostname] = "api.boundary.com"
-set[:boundary][:api][:id] = "yourid"
-set[:boundary][:api][:key] = "yourkey"
+default[:boundary][:api][:hostname] = "api.boundary.com"
+default[:boundary][:api][:id] = "yourid"
+default[:boundary][:api][:key] = "yourkey"

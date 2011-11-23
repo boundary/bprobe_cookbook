@@ -21,15 +21,11 @@
 # delete the meter from the boundary api
 bprobe node[:fqdn] do
   action :delete
-  username node[:boundary][:api][:username]
-  apikey node[:boundary][:api][:key]
 end
 
 # delete the cert and key files on disk
 bprobe_certificates node[:fqdn] do
   action :delete
-  username node[:boundary][:api][:username]
-  apikey node[:boundary][:api][:key]
 end
 
 service "bprobe" do

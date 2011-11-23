@@ -24,7 +24,6 @@ include_recipe "bprobe::dependencies"
 # create the meter in the boundary api
 bprobe node[:fqdn] do
   action :create
-  apikey node[:boundary][:api][:key]
 end
 
 # setup the config directory
@@ -39,7 +38,6 @@ end
 # download and install the meter cert and key files
 bprobe_certificates node[:fqdn] do
   action :install
-  apikey node[:boundary][:api][:key]
 end
 
 # install the bprobe package

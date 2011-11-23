@@ -18,10 +18,10 @@
 # limitations under the License.
 #
 
-set[:boundary][:bprobe][:bin][:path] = "/usr/local"
-set[:boundary][:bprobe][:etc][:path] = "/etc/bprobe"
+default[:boundary][:bprobe][:bin][:path] = "/usr/local"
+default[:boundary][:bprobe][:etc][:path] = "/etc/bprobe"
 
-set[:boundary][:bprobe][:collector][:hostname] = "collector.boundary.com"
-set[:boundary][:bprobe][:collector][:port] = "4740"
+default[:boundary][:bprobe][:collector][:hostname] = "collector.boundary.com"
+default[:boundary][:bprobe][:collector][:port] = "4740"
 
-set_unless[:boundary][:bprobe][:tags] = []
+default[:boundary][:bprobe][:tags] = []

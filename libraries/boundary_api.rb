@@ -43,14 +43,14 @@ module Boundary
     def apply_meter_tags(new_resource)
       Chef::Log.debug("This meter currently has these tags [#{node[:boundary][:bprobe][:tags]}]")
 
-      tags = new_resource.tags - node[:boundary][:bprobe][:tags]
+      tags = node[:boundary][:bprobe][:tags]
 
       if tags.length > 0
         begin
           url = build_url(new_resource, :tags)
           headers = generate_headers()
 
-          Chef::Log.info("Applying meter tags [#{new_resource.tags}]")
+          Chef::Log.info("Applying meter tags [#{node[:boundary][:bprobe][:tags]}]")
 
           tags.each do |tag|
             http_request(:put, "#{url}/#{tag}", headers, "")
@@ -73,19 +73,6 @@ module Boundary
 
       rescue Exception => e
         Chef::Log.error("Could not delete meter [#{new_resource.name}], failed with #{e}")
-      end
-    end
-
-    def save_meter_tags_attribute(new_resource)
-      if Chef::Config[:solo]
-        Chef::Log.debug("chef-solo run, not attempting to save tags attribute.")
-      else
-        begin
-          node.set[:boundary][:bprobe][:tags] = new_resource.tags
-          node.save
-        rescue Exception => e
-          Chef::Log.error("Could not save meter tags as node attribute, failed with #{e}")
-        end
       end
     end
 

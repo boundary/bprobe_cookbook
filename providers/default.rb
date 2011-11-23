@@ -29,7 +29,6 @@ action :create do
   end
 
   apply_meter_tags(new_resource)
-  save_meter_tags_attribute(new_resource)
 end
 
 action :delete do
