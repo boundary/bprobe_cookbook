@@ -21,4 +21,3 @@
 actions :create, :delete
 
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
-attribute :tags, :kind_of => Array, :required => false, :default => []
