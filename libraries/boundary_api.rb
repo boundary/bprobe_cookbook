@@ -1,4 +1,4 @@
-#
+##
 # Author:: Joe Williams (<j@boundary.com>)
 # Cookbook Name:: bprobe
 # Library:: boundary_api
@@ -19,7 +19,8 @@
 #
 
 require 'json'
-require 'excon'
+require 'uri'
+require 'net/https'
 require 'base64'
 
 module Boundary
@@ -32,7 +33,7 @@ module Boundary
         body = {:name => new_resource.name}.to_json
 
         Chef::Log.info("Creating meter [#{new_resource.name}]")
-        response = http_post_request(url, headers, body)
+        response = http_request(:post, url, headers, body)
 
       rescue Exception => e
         Chef::Log.error("Could not create meter [#{new_resource.name}], failed with #{e}")
@@ -52,7 +53,7 @@ module Boundary
           Chef::Log.info("Applying meter tags [#{new_resource.tags}]")
 
           tags.each do |tag|
-            http_put_request("#{url}/#{tag}", headers, "")
+            http_request(:put, "#{url}/#{tag}", headers, "")
           end
         rescue Exception => e
           Chef::Log.error("Could not apply meter tag, failed with #{e}")
@@ -68,7 +69,7 @@ module Boundary
         headers = generate_headers()
 
         Chef::Log.info("Deleting meter [#{new_resource.name}]")
-        response = http_delete_request(url, headers)
+        response = http_request(:delete, url, headers)
 
       rescue Exception => e
         Chef::Log.error("Could not delete meter [#{new_resource.name}], failed with #{e}")
@@ -159,7 +160,7 @@ module Boundary
         url = build_url(new_resource, :search)
         headers = generate_headers()
 
-        response = http_get_request(url, headers)
+        response = http_request(:get, url, headers)
 
         if response
           body = JSON.parse(response.body)
@@ -182,7 +183,7 @@ module Boundary
         url = build_url(new_resource, :search)
         headers = generate_headers()
 
-        response = http_get_request(url, headers)
+        response = http_request(:get, url, headers)
 
         if response
           body = JSON.parse(response.body)
@@ -205,65 +206,42 @@ module Boundary
       end
     end
 
-    def http_get_request(url, headers)
+    def http_request(method, url, headers, body = nil)
       Chef::Log.debug("Url: #{url}")
-      Chef::Log.debug("Headers: #{headers}")
+      Chef::Log.debug("Headers: #{headers.to_hash.inspect}")
+      Chef::Log.debug("Request Body: #{body}")
 
-      response = Excon.get(url, :headers => headers)
+      uri = URI(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+      http.ca_file = "#{Chef::Config[:file_cache_path]}/cacert.pem"
+      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-      Chef::Log.debug("Body: #{response.body}")
-      Chef::Log.debug("Status: #{response.status}")
-
-      if bad_response?(:get, url, response)
-        nil
+      case method
+      when :get
+        req = Net::HTTP::Get.new(uri.request_uri)
+      when :post
+        req = Net::HTTP::Post.new(uri.request_uri)
+        req.body = body   
+      when :put
+        req = Net::HTTP::Put.new(uri.request_uri)
+        req.body = body
+      when :delete
+        req = Net::HTTP::Delete.new(uri.request_uri)
       else
-        response
-      end
-    end
-
-    def http_delete_request(url, headers)
-      Chef::Log.debug("Url: #{url}")
-      Chef::Log.debug("Headers: #{headers}")
-
-      response = Excon.delete(url, :headers => headers)
-
-      Chef::Log.debug("Body: #{response.body}")
-      Chef::Log.debug("Status: #{response.status}")
-
-      if bad_response?(:delete, url, response)
+        Chef::Log.error("Unsupported http method (nil response)!")
         nil
-      else
-        response
       end
-    end
 
+      headers.each{|k,v|
+        req[k] = v
+      }
+      response = http.request(req)
 
-    def http_post_request(url, headers, body)
-      Chef::Log.debug("Url: #{url}")
-      Chef::Log.debug("Headers: #{headers}")
+      Chef::Log.debug("Response Body: #{response.body}")
+      Chef::Log.debug("Status: #{response.code}")
 
-      response = Excon.post(url, :headers => headers, :body => body)
-
-      Chef::Log.debug("Body: #{response.body}")
-      Chef::Log.debug("Status: #{response.status}")
-
-      if bad_response?(:post, url, response)
-        nil
-      else
-        response
-      end
-    end
-
-    def http_put_request(url, headers, body)
-      Chef::Log.debug("Url: #{url}")
-      Chef::Log.debug("Headers: #{headers}")
-
-      response = Excon.put(url, :headers => headers, :body => body)
-
-      Chef::Log.debug("Body: #{response.body}")
-      Chef::Log.debug("Status: #{response.status}")
-
-      if bad_response?(:put, url, response)
+      if bad_response?(method, url, response)
         nil
       else
         response
@@ -271,12 +249,13 @@ module Boundary
     end
 
     def bad_response?(method, url, response)
-      if response.status >= 400
-        Chef::Application.fatal!("Got a #{response.status} for #{method} to #{url}")
-        true
-      else
-        false
-      end
+       case response
+       when Net::HTTPSuccess
+         false
+       else
+         true 
+        Chef::Log.error("Got a #{response.code} for #{method} to #{url}")
+       end
     end
 
   end
