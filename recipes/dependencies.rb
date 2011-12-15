@@ -35,6 +35,8 @@ when "redhat", "centos"
 
 when "debian", "ubuntu"
 
+  package "apt-transport-https"
+
   apt_repository "boundary" do
     uri "https://apt.boundary.com/ubuntu/"
     distribution node['lsb']['codename']
