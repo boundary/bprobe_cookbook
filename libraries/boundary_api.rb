@@ -124,21 +124,21 @@ module Boundary
     def build_url(new_resource, action)
       case action
       when :create
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters"
       when :search
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters?name=#{new_resource.name}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters?name=#{new_resource.name}"
       when :meter
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}"
       when :certificates
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}"
       when :delete
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}"
       when :tags
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:id]}/meters/#{meter_id}/tags"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}/tags"
       end
     end
 
@@ -209,7 +209,7 @@ module Boundary
         req = Net::HTTP::Get.new(uri.request_uri)
       when :post
         req = Net::HTTP::Post.new(uri.request_uri)
-        req.body = body   
+        req.body = body
       when :put
         req = Net::HTTP::Put.new(uri.request_uri)
         req.body = body
@@ -240,7 +240,7 @@ module Boundary
        when Net::HTTPSuccess
          false
        else
-         true 
+         true
         Chef::Log.error("Got a #{response.code} for #{method} to #{url}")
        end
     end

@@ -19,5 +19,5 @@
 #
 
 default[:boundary][:api][:hostname] = "api.boundary.com"
-default[:boundary][:api][:id] = "yourid"
+default[:boundary][:api][:org_id] = "yourid"
 default[:boundary][:api][:key] = "yourkey"

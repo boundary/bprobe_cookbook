@@ -7,10 +7,11 @@ This cookbook has two functions, the first is to install the Boundary bprobe dae
 
 Setup your API keys in attributes/api.rb
 
-`default[:boundary][:api][:hostname] = "api.boundary.com"`
-`default[:boundary][:api][:id] = "dlekd93DGJDJw9diekd98"`
-`default[:boundary][:api][:key] = "PI1ldnfKENFMslekd29dl"`
-
+````
+default[:boundary][:api][:hostname] = "api.boundary.com"
+default[:boundary][:api][:org_id] = "dlekd93DGJDJw9diekd98"
+default[:boundary][:api][:key] = "PI1ldnfKENFMslekd29dl"
+````
 
 ##### Host Tags
 
