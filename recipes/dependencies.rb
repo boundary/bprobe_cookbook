@@ -26,9 +26,21 @@ when "redhat", "centos"
     action :add
   end
 
+  # default to 64bit
+  machine = "x86_64"
+
+  case node[:kernel][:machine]
+  when "x86_64"
+    machine = "x86_64"
+  when "i686"
+    machine = "i386"
+  when "i386"
+    machine = "i386"
+  end
+
   yum_repository "boundary" do
     name "boundary"
-    url "https://yum.boundary.com/centos/os/5.5/x86_64/"
+    url "https://yum.boundary.com/centos/os/5.5/#{machine}/"
     key "RPM-GPG-KEY-boundary"
     action :add
   end
