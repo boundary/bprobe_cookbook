@@ -18,13 +18,13 @@
 # limitations under the License.
 #
 
-# delete the meter from the boundary api
-bprobe node[:fqdn] do
+# delete the cert and key files on disk
+bprobe_certificates node[:fqdn] do
   action :delete
 end
 
-# delete the cert and key files on disk
-bprobe_certificates node[:fqdn] do
+# delete the meter from the boundary api
+bprobe node[:fqdn] do
   action :delete
 end
 
