@@ -101,8 +101,13 @@ module Boundary
         Chef::Log.debug("chef-solo run, not attempting to delete attribute.")
       else
         begin
-          if node[:boundary][:bprobe][:id]
-            node[:boundary][:bprobe].delete(:id)
+          if node[:boundary][:bprobe]
+            node[:boundary].delete(:bprobe)
+            node.save
+          end
+
+          if node.default_attrs[:boundary][:bprobe]
+            node.default_attrs[:boundary].delete(:bprobe)
             node.save
           end
         rescue Exception => e
