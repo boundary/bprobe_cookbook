@@ -31,3 +31,7 @@ end
 service "bprobe" do
   action [ :stop, :disable ]
 end
+
+package "bprobe" do
+  action :remove
+end
