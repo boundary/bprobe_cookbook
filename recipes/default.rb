@@ -42,9 +42,7 @@ end
 
 # install the bprobe package
 
-package "bprobe" do
-  action :upgrade
-end
+package "bprobe"
 
 # start the bprobe service
 service "bprobe" do
