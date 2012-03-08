@@ -40,7 +40,7 @@ when "redhat", "centos"
 
   yum_repository "boundary" do
     name "boundary"
-    url "https://yum.boundary.com/centos/os/5.5/#{machine}/"
+    url "https://yum.boundary.com/centos/os/#{node[:platform_version]}/#{machine}/"
     key "RPM-GPG-KEY-boundary"
     action :add
   end
