@@ -45,7 +45,7 @@ when "redhat", "centos"
     action :add
   end
 
-when "debian", "ubuntu"
+when "ubuntu"
 
   package "apt-transport-https"
 
@@ -53,6 +53,18 @@ when "debian", "ubuntu"
     uri "https://apt.boundary.com/ubuntu/"
     distribution node['lsb']['codename']
     components ["universe"]
+    key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
+    action :add
+  end
+
+when "debian"
+
+  package "apt-transport-https"
+
+  apt_repository "boundary" do
+    uri "https://apt.boundary.com/debian/"
+    distribution node['lsb']['codename']
+    components ["main"]
     key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
     action :add
   end
