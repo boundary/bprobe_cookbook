@@ -40,26 +40,43 @@ module Boundary
       end
     end
 
+    def apply_cloud_tags(new_resource)
+      if node[:ec2]
+        Chef::Log.debug("This meter seems to be on EC2, applying ec2 based tags")
+
+        node[:security_groups].each do |group|
+          apply_an_tag(new_resource, group)
+        end
+
+        apply_an_tag(new_resource, node[:placement_availability_zone])
+        apply_an_tag(new_resource, node[:instance_type])
+      end
+    end
+
     def apply_meter_tags(new_resource)
-      Chef::Log.debug("This meter currently has these tags [#{node[:boundary][:bprobe][:tags]}]")
+      Chef::Log.debug("This meter currently has these attribute based tags [#{node[:boundary][:bprobe][:tags]}]")
 
       tags = node[:boundary][:bprobe][:tags]
 
       if tags.length > 0
-        begin
-          url = build_url(new_resource, :tags)
-          headers = generate_headers()
-
-          Chef::Log.info("Applying meter tags [#{node[:boundary][:bprobe][:tags]}]")
-
-          tags.each do |tag|
-            http_request(:put, "#{url}/#{tag}", headers, "")
-          end
-        rescue Exception => e
-          Chef::Log.error("Could not apply meter tag, failed with #{e}")
+        tags.each do |tag|
+          apply_an_tag(new_resource, tag)
         end
       else
         Chef::Log.debug("No meter tags to apply.")
+      end
+    end
+
+    def apply_an_tag(new_resource, tag)
+      begin
+        url = build_url(new_resource, :tags)
+        headers = generate_headers()
+
+        Chef::Log.info("Applying meter tag [#{tag}]")
+
+        http_request(:put, "#{url}/#{tag}", headers, "")
+      rescue Exception => e
+        Chef::Log.error("Could not apply meter tag, failed with #{e}")
       end
     end
 
