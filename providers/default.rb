@@ -28,8 +28,7 @@ action :create do
     save_meter_id_attribute(new_resource)
   end
 
-  apply_cloud_tags(new_resource)
-  apply_meter_tags(new_resource)
+  apply_tags(new_resource)
 end
 
 action :delete do
