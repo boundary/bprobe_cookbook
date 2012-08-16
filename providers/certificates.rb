@@ -27,6 +27,8 @@ action :install do
 
   download_certificate_request(new_resource)
   download_key_request(new_resource)
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :delete do
@@ -40,6 +42,8 @@ action :delete do
       action :delete
     end
   end
+
+  new_resource.updated_by_last_action(true)
 end
 
 private
@@ -52,9 +56,9 @@ def download_certificate_request(new_resource)
       auth = auth_encode()
       base_url = build_url(new_resource, :certificates)
       headers = {"Authorization" => "Basic #{auth}"}
-      
+
       cert_response = http_request(:get, "#{base_url}/cert.pem", headers)
-      
+
       if cert_response
         file "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem" do
           mode 0600
@@ -80,9 +84,9 @@ def download_key_request(new_resource)
       auth = auth_encode()
       base_url = build_url(new_resource, :certificates)
       headers = {"Authorization" => "Basic #{auth}"}
-      
+
       key_response = http_request(:get, "#{base_url}/key.pem", headers)
-      
+
       if key_response
         file "#{node[:boundary][:bprobe][:etc][:path]}/key.pem" do
           mode 0600

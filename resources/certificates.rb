@@ -20,4 +20,9 @@
 
 actions :install, :delete
 
+def initialize(*args)
+  super
+  @action = :install
+end
+
 attribute :name, :kind_of => String, :name_attribute => true, :required => true

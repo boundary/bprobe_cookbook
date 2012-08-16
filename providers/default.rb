@@ -29,6 +29,8 @@ action :create do
   end
 
   apply_tags(new_resource)
+
+  new_resource.updated_by_last_action(true)
 end
 
 action :delete do
@@ -38,4 +40,6 @@ action :delete do
   else
     Chef::Log.debug("Boundary meter doesn't exist, not deleting.")
   end
+
+  new_resource.updated_by_last_action(true)
 end
