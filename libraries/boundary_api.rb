@@ -40,57 +40,51 @@ module Boundary
       end
     end
 
-    def cloud_tags(new_resource)
-      tags = []
-
+    def apply_cloud_tags(new_resource)
       if node[:ec2]
         Chef::Log.debug("This meter seems to be on EC2, applying ec2 based tags")
 
         if node[:ec2][:security_groups].length > 0
           node[:ec2][:security_groups].each do |group|
-            tags << group
+            apply_an_tag(new_resource, group)
           end
         end
 
         if node[:ec2][:placement_availability_zone]
-          tags << node[:ec2][:placement_availability_zone]
+          apply_an_tag(new_resource, node[:ec2][:placement_availability_zone])
         end
 
         if node[:ec2][:instance_type]
-          tags << node[:ec2][:instance_type]
+          apply_an_tag(new_resource, node[:ec2][:instance_type])
         end
       end
     end
 
-    def apply_tags(new_resource)
-      all_tags = []
+    def apply_meter_tags(new_resource)
+      Chef::Log.debug("This meter currently has these attribute based tags [#{node[:boundary][:bprobe][:tags]}]")
 
-      cloud_tags = cloud_tags(new_resource)
-      meter_tags = node[:boundary][:bprobe][:tags]
+      tags = node[:boundary][:bprobe][:tags]
 
-      if cloud_tags
-        all_tags = cloud_tags
-      end
-
-      if meter_tags
-        all_tags = all_tags + meter_tags
-      end
-
-      if all_tags.length > 0
-        begin
-          url = build_url(new_resource, :tags)
-          headers = generate_headers()
-
-          Chef::Log.info("Applying meter tags [#{all_tags}]")
-
-          http_request(:put, url, headers, {"tags" => all_tags}.to_json)
-        rescue Exception => e
-          Chef::Log.error("Could not apply meter tag, failed with #{e}")
+      if tags.length > 0
+        tags.each do |tag|
+          apply_an_tag(new_resource, tag)
         end
       else
         Chef::Log.debug("No meter tags to apply.")
       end
+    end
 
+    def apply_an_tag(new_resource, tag)
+      begin
+        url = build_url(new_resource, :tags)
+        headers = generate_headers()
+
+        Chef::Log.info("Applying meter tag [#{tag}]")
+
+        http_request(:put, "#{url}/#{tag}", headers, "")
+      rescue Exception => e
+        Chef::Log.error("Could not apply meter tag, failed with #{e}")
+      end
     end
 
     def delete_meter_request(new_resource)
@@ -173,7 +167,7 @@ module Boundary
         "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}"
       when :tags
         meter_id = get_meter_id(new_resource)
-        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}"
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}/tags"
       end
     end
 

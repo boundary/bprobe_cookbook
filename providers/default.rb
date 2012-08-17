@@ -28,7 +28,8 @@ action :create do
     save_meter_id_attribute(new_resource)
   end
 
-  apply_tags(new_resource)
+  apply_cloud_tags(new_resource)
+  apply_meter_tags(new_resource)
 
   new_resource.updated_by_last_action(true)
 end
