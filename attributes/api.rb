@@ -19,5 +19,9 @@
 #
 
 default[:boundary][:api][:hostname] = "api.boundary.com"
+
+# this is your organization id
 default[:boundary][:api][:org_id] = "yourid"
+
+# this is your api key (not the install token)
 default[:boundary][:api][:key] = "yourkey"
