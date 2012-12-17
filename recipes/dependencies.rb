@@ -19,7 +19,7 @@
 #
 
 case node[:platform]
-when "redhat", "centos"
+when "redhat", "centos", "amazon"
 
   yum_key "RPM-GPG-KEY-boundary" do
     url "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
@@ -38,9 +38,11 @@ when "redhat", "centos"
     machine = "i386"
   end
 
+  rhel_platform_version = node[:platform] == "amazon" ? "6" : node[:platform_version]
+
   yum_repository "boundary" do
     name "boundary"
-    url "https://yum.boundary.com/centos/os/#{node[:platform_version]}/#{machine}/"
+    url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
     key "RPM-GPG-KEY-boundary"
     action :add
   end
