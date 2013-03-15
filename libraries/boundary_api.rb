@@ -41,6 +41,11 @@ module Boundary
     end
 
     def apply_cloud_tags(new_resource)
+      apply_cloud_tags_ec2(new_resource)
+      apply_cloud_tags_opsworks(new_resource)
+    end
+
+    def apply_cloud_tags_ec2(new_resource)
       if node[:ec2]
         Chef::Log.debug("This meter seems to be on EC2, applying ec2 based tags")
 
@@ -56,6 +61,33 @@ module Boundary
 
         if node[:ec2][:instance_type]
           apply_an_tag(new_resource, node[:ec2][:instance_type])
+        end
+      end
+    end
+
+    def apply_cloud_tags_opsworks(new_resource)
+      if node[:opsworks]
+        Chef::Log.debug("This meter seems to be running AWS OpsWorks, applying OpsWorks based tags")
+
+        if node[:opsworks][:stack]
+          if node[:opsworks][:stack][:name]
+            apply_an_tag(new_resource, node[:opsworks][:stack][:name])
+          end
+        end
+
+        if node[:opsworks][:instance]
+          if node[:opsworks][:instance][:layers].length > 0
+            node[:opsworks][:instance][:layers].each do |layer|
+              apply_an_tag(new_resource, layer)
+            end
+          end
+        end
+
+        if node[:opsworks][:applications].length > 0
+          node[:opsworks][:applications].each do |app|
+            apply_an_tag(new_resource, app["name"])
+            apply_an_tag(new_resource, app["application_type"])
+          end
         end
       end
     end
