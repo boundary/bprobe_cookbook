@@ -286,7 +286,7 @@ module Boundary
             end
           end
 
-          create_annotation(new_resource, "OpsWorks Life Cycle Event on #{node["name"]}", node[:opsworks][:activity], tags)
+          create_annotation(new_resource, "OpsWorks Life Cycle Event on #{node[:fqdn]}", node[:opsworks][:activity], tags)
         end
       end
     end
