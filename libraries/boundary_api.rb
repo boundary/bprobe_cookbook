@@ -200,6 +200,8 @@ module Boundary
       when :tags
         meter_id = get_meter_id(new_resource)
         "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/meters/#{meter_id}/tags"
+      when :annotate
+        "https://#{node[:boundary][:api][:hostname]}/#{node[:boundary][:api][:org_id]}/annotations"
       end
     end
 
@@ -251,6 +253,62 @@ module Boundary
       rescue Exception => e
         Chef::Application.fatal!("Could not get meter id, failed with #{e}")
         nil
+      end
+    end
+
+    def annotate(new_resource)
+      create_opsworks_life_cycle_event_annotation(new_resource)
+    end
+
+    def create_opsworks_life_cycle_event_annotation(new_resource)
+      if node[:opsworks]
+        if node[:opsworks][:activity]
+          tags = ["opsworks", "ec2"]
+
+          if node[:opsworks][:stack]
+            if node[:opsworks][:stack][:name]
+              tags << node[:opsworks][:stack][:name]
+            end
+          end
+
+          if node[:opsworks][:instance]
+            if node[:opsworks][:instance][:layers].length > 0
+              node[:opsworks][:instance][:layers].each do |layer|
+                tags << layer
+              end
+            end
+          end
+
+          if node[:opsworks][:applications].length > 0
+            node[:opsworks][:applications].each do |app|
+              tags << app["name"]
+              tags << app["application_type"]
+            end
+          end
+
+          create_annotation(new_resource, "OpsWorks Life Cycle Event on #{node["name"]}", node[:opsworks][:activity], tags)
+        end
+      end
+    end
+
+    def create_annotation(new_resource, type, subtype, tags = [])
+      annotation = {
+        :type => type,
+        :subtype => subtype,
+        :start_time => Time.now,
+        :end_time => Time.now,
+        :tags => tags
+      }
+
+      begin
+        url = build_url(new_resource, :annotate)
+        headers = generate_headers()
+
+        response = http_request(:post, url, headers, annotation.to_json)
+
+        Chef::Log.info("Created a Boundary Annotation @ #{response["location"]}")
+      rescue Exception => e
+        Chef::Application.fatal!("Could not create annotation due to #{e}!")
       end
     end
 
