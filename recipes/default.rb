@@ -77,6 +77,7 @@ bprobe_annotation "bprobe installation" do
   subtype node[:fqdn]
 end
 
+# this will only end up creating an annotation if you are on opsworks
 bprobe_annotation "bprobe installation" do
   action :create_opsworks
 end
