@@ -257,13 +257,13 @@ module Boundary
     end
 
     def annotate(new_resource)
-      create_opsworks_life_cycle_event_annotation(new_resource)
+      create_annotation(new_resource, new_resource.type, new_resource.subtype, new_resource.tags)
     end
 
     def create_opsworks_life_cycle_event_annotation(new_resource)
       if node[:opsworks]
         if node[:opsworks][:activity]
-          tags = ["opsworks", "ec2"]
+          tags = ["opsworks", "ec2"] + new_resource.tags
 
           if node[:opsworks][:stack]
             if node[:opsworks][:stack][:name]
@@ -295,8 +295,8 @@ module Boundary
       annotation = {
         :type => type,
         :subtype => subtype,
-        :start_time => Time.now,
-        :end_time => Time.now,
+        :start_time => new_resource.start_time,
+        :end_time => new_resource.end_time,
         :tags => tags
       }
 

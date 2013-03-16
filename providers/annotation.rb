@@ -1,7 +1,7 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
 # Cookbook Name:: bprobe
-# Provider:: default
+# Provider:: annotation
 #
 # Copyright 2011, Boundary
 #
@@ -21,26 +21,9 @@
 include Boundary::API
 
 action :create do
-  if node[:boundary][:bprobe][:id]
-    Chef::Log.debug("Boundary meter already exists, not creating.")
-  else
-    create_meter_request(new_resource)
-    save_meter_id_attribute(new_resource)
-  end
-
-  apply_cloud_tags(new_resource)
-  apply_meter_tags(new_resource)
-
-  new_resource.updated_by_last_action(true)
+  annotate(new_resource)
 end
 
-action :delete do
-  if meter_exists?(new_resource)
-    delete_meter_request(new_resource)
-    delete_meter_id_attribute
-  else
-    Chef::Log.debug("Boundary meter doesn't exist, not deleting.")
-  end
-
-  new_resource.updated_by_last_action(true)
+action :create_opsworks do
+  create_opsworks_life_cycle_event_annotation(new_resource)
 end

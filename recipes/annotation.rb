@@ -1,9 +1,9 @@
 #
 # Author:: Joe Williams (<j@boundary.com>)
 # Cookbook Name:: bprobe
-# Recipe:: delete
+# Recipe:: annotation
 #
-# Copyright 2011, Boundary
+# Copyright 2012, Boundary
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,28 +18,11 @@
 # limitations under the License.
 #
 
-# delete the cert and key files on disk
-bprobe_certificates node[:fqdn] do
-  action :delete
-end
+# example recipe for creating an boundary annotation
 
-# delete the meter from the boundary api
-bprobe node[:fqdn] do
-  action :delete
-end
-
-service "bprobe" do
-  action [ :stop, :disable ]
-end
-
-package "bprobe" do
-  action :remove
-end
-
-bprobe_annotation "bprobe removal" do
+bprobe_annotation "chef annotation" do
   action :create
+  subtype "test"
+  tags ["tag1", "tag2"]
 end
 
-bprobe_annotation "bprobe removal" do
-  action :create_opsworks
-end

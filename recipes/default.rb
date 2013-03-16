@@ -71,3 +71,11 @@ template "#{node[:boundary][:bprobe][:etc][:path]}/bprobe.defaults" do
   group "root"
   notifies :restart, resources(:service => "bprobe")
 end
+
+bprobe_annotation "bprobe installation" do
+  action :create
+end
+
+bprobe_annotation "bprobe installation" do
+  action :create_opsworks
+end
