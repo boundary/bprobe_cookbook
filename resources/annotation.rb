@@ -27,6 +27,6 @@ end
 
 attribute :type, :kind_of => String, :name_attribute => true, :required => true
 attribute :subtype, :kind_of => String, :default => "chef"
-attribute :start_time, :kind_of => Integer, :default => Time.now
-attribute :end_time, :kind_of => Integer, :default => Time.now
+attribute :start_time, :kind_of => Integer, :default => Time.now.to_i
+attribute :end_time, :kind_of => Integer, :default => Time.now.to_i
 attribute :tags, :kind_of => Array, :default => []
