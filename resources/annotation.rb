@@ -25,7 +25,7 @@ def initialize(*args)
   @action = :create
 end
 
-attribute :type, :kind_of => String, :name_attribute => true, :required => true
+attribute :name, :kind_of => String, :name_attribute => true, :required => true
 attribute :subtype, :kind_of => String, :default => "chef"
 attribute :start_time, :kind_of => Integer, :default => Time.now.to_i
 attribute :end_time, :kind_of => Integer, :default => Time.now.to_i

@@ -257,7 +257,7 @@ module Boundary
     end
 
     def annotate(new_resource)
-      create_annotation(new_resource, new_resource.type, new_resource.subtype, new_resource.tags)
+      create_annotation(new_resource, new_resource.name, new_resource.subtype, new_resource.tags)
     end
 
     def create_opsworks_life_cycle_event_annotation(new_resource)
