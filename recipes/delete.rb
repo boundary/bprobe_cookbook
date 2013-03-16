@@ -38,6 +38,7 @@ end
 
 bprobe_annotation "bprobe removal" do
   action :create
+  subtype node[:fqdn]
 end
 
 bprobe_annotation "bprobe removal" do

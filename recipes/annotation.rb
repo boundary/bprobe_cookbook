@@ -27,6 +27,8 @@ bprobe_annotation "chef annotation" do
 end
 
 # example for creating an annoation based on opsworks data
+# this provider will ignore the type and subtype you specify and use its own
+# additionally it will use your tags and add some from opsworks data automatically
 
 bprobe_annotation "opsworks" do
   action :create_opsworks

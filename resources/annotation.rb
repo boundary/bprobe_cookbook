@@ -26,7 +26,7 @@ def initialize(*args)
 end
 
 attribute :type, :kind_of => String, :name_attribute => true, :required => true
-attribute :subtype, :kind_of => String, :default => node[:fqdn]
+attribute :subtype, :kind_of => String, :default => "chef"
 attribute :start_time, :kind_of => Integer, :default => Time.now
 attribute :end_time, :kind_of => Integer, :default => Time.now
 attribute :tags, :kind_of => Array, :default => []

@@ -74,6 +74,7 @@ end
 
 bprobe_annotation "bprobe installation" do
   action :create
+  subtype node[:fqdn]
 end
 
 bprobe_annotation "bprobe installation" do
