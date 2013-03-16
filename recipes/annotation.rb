@@ -26,3 +26,8 @@ bprobe_annotation "chef annotation" do
   tags ["tag1", "tag2"]
 end
 
+# example for creating an annoation based on opsworks data
+
+bprobe_annotation "opsworks" do
+  action :create_opsworks
+end
