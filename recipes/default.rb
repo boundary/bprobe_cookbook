@@ -42,7 +42,10 @@ end
 
 # install the bprobe package
 
-package "bprobe"
+package "bprobe" do
+  notifies :create, "bprobe_annotation[bprobe-installation]", :immediately
+  notifies :create_opsworks, "bprobe_annotation[bprobe-installation-opsworks]", :immediately
+end
 
 # start the bprobe service
 service "bprobe" do
@@ -72,12 +75,12 @@ template "#{node[:boundary][:bprobe][:etc][:path]}/bprobe.defaults" do
   notifies :restart, resources(:service => "bprobe")
 end
 
-bprobe_annotation "bprobe installation" do
-  action :create
+bprobe_annotation "bprobe-installation" do
+  action :nothing
   subtype node[:fqdn]
 end
 
 # this will only end up creating an annotation if you are on opsworks
-bprobe_annotation "bprobe installation" do
-  action :create_opsworks
+bprobe_annotation "bprobe-installation-opsworks" do
+  action :nothing
 end
