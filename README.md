@@ -51,7 +51,10 @@ end
 
 You can find further examples in the `annotation.rb` recipe.
 
+##### EC2
+
+This cookbook includes automatic detection and tagging of your meter with various EC2 attributes such as security group and instance type.
 
 ##### OpsWorks
 
-If you are using OpsWorks this cookbook should work out of the box. This cookbook also includes automatic detection and tagging of your meter with layers, stack name and applications if any exist.
+If you are using OpsWorks this cookbook should work out of the box (with the above dependencies). This cookbook also includes automatic detection and tagging of your meter with layers, stack name and applications if any exist.
