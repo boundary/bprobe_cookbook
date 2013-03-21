@@ -41,7 +41,7 @@ when "redhat", "centos", "amazon"
   rhel_platform_version = node[:platform] == "amazon" ? "6" : node[:platform_version]
 
   yum_repository "boundary" do
-    name "boundary"
+    repo_name "boundary"
     url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
     key "RPM-GPG-KEY-boundary"
     action :add
