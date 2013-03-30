@@ -53,7 +53,7 @@ when "ubuntu"
 
   apt_repository "boundary" do
     uri "https://apt.boundary.com/ubuntu/"
-    distribution node['lsb']['codename']
+    distribution node[:lsb][:codename]
     components ["universe"]
     key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
     action :add
@@ -65,7 +65,7 @@ when "debian"
 
   apt_repository "boundary" do
     uri "https://apt.boundary.com/debian/"
-    distribution node['lsb']['codename']
+    distribution node[:lsb][:codename]
     components ["main"]
     key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
     action :add

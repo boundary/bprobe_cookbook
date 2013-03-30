@@ -22,8 +22,10 @@ include Boundary::API
 
 action :create do
   annotate(new_resource)
+  new_resource.updated_by_last_action(true)
 end
 
 action :create_opsworks do
   create_opsworks_life_cycle_event_annotation(new_resource)
+  new_resource.updated_by_last_action(true)
 end
