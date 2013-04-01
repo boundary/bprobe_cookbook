@@ -52,8 +52,8 @@ bprobe_annotation "bprobe-installation-opsworks" do
 end
 
 package "bprobe" do
-  notifies :create, resources(:bprobe_annotation => "bprobe-installation"), :immediately
-  notifies :create_opsworks, resources(:bprobe_annotation => "bprobe-installation-opsworks"), :immediately
+  notifies :create, "bprobe_annotation[bprobe-installation]", :immediately
+  notifies :create_opsworks, "bprobe_annotation[bprobe-installation-opsworks]", :immediately
 end
 
 # start the bprobe service
@@ -72,7 +72,7 @@ cookbook_file "#{node[:boundary][:bprobe][:etc][:path]}/ca.pem" do
   mode 0600
   owner "root"
   group "root"
-  notifies :restart, resources(:service => "bprobe")
+  notifies :restart, "service[bprobe]"
 end
 
 # enforce the main config file
@@ -81,6 +81,6 @@ template "#{node[:boundary][:bprobe][:etc][:path]}/bprobe.defaults" do
   mode 0644
   owner "root"
   group "root"
-  notifies :restart, resources(:service => "bprobe")
+  notifies :restart, "service[bprobe]"
 end
 
