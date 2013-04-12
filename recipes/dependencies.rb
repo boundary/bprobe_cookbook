@@ -40,11 +40,19 @@ when "redhat", "centos", "amazon"
 
   rhel_platform_version = node[:platform] == "amazon" ? "6" : node[:platform_version]
 
+  ruby_block "reload-internal-yum-cache" do
+    block do
+      Chef::Provider::Package::Yum::YumCache.instance.reload
+    end
+    action :nothing
+  end
+
   yum_repository "boundary" do
     description "boundary"
     url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
     key "RPM-GPG-KEY-boundary"
     action :add
+    notifies :create, resources(:ruby_block => 'reload-internal-yum-cache'), :immediately
   end
 
 when "ubuntu"
