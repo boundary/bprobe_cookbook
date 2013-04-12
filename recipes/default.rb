@@ -40,7 +40,6 @@ bprobe_certificates node[:fqdn] do
   action :install
 end
 
-# install the bprobe package
 bprobe_annotation "bprobe-installation" do
   action :nothing
   subtype node[:fqdn]
@@ -51,9 +50,10 @@ bprobe_annotation "bprobe-installation-opsworks" do
   action :nothing
 end
 
+# install the bprobe package
 package "bprobe" do
-  notifies :create, "bprobe_annotation[bprobe-installation]", :immediately
-  notifies :create_opsworks, "bprobe_annotation[bprobe-installation-opsworks]", :immediately
+  notifies :create, resources(:bprobe_annotation => 'bprobe-installation'), :immediately
+  notifies :create_opsworks, resources(:bprobe_annotation => 'bprobe-installation-opsworks'), :immediately
 end
 
 # start the bprobe service
