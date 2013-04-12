@@ -72,7 +72,7 @@ cookbook_file "#{node[:boundary][:bprobe][:etc][:path]}/ca.pem" do
   mode 0600
   owner "root"
   group "root"
-  notifies :restart, "service[bprobe]"
+  notifies :restart, resources(:service => 'bprobe')
 end
 
 # enforce the main config file
@@ -81,6 +81,6 @@ template "#{node[:boundary][:bprobe][:etc][:path]}/bprobe.defaults" do
   mode 0644
   owner "root"
   group "root"
-  notifies :restart, "service[bprobe]"
+  notifies :restart, resources(:service => 'bprobe')
 end
 
