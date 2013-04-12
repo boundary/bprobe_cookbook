@@ -48,7 +48,7 @@ when "redhat", "centos", "amazon"
   end
 
   execute 'reload-external-yum-cache' do
-    command 'yum makecache'
+    command 'yum -q makecache'
     action :nothing
   end
 
