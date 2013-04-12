@@ -47,11 +47,17 @@ when "redhat", "centos", "amazon"
     action :nothing
   end
 
+  execute 'reload-external-yum-cache' do
+    command 'yum makecache'
+    action :nothing
+  end
+
   yum_repository "boundary" do
     description "boundary"
     url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
     key "RPM-GPG-KEY-boundary"
     action :add
+    notifies :run, resources(:execute => 'reload-external-yum-cache'), :immediately
     notifies :create, resources(:ruby_block => 'reload-internal-yum-cache'), :immediately
   end
 
