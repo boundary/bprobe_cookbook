@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-case node[:platform]
-when "redhat", "centos", "amazon"
+case node[:platform_family]
+when "rhel"
 
   yum_key "RPM-GPG-KEY-boundary" do
     url "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
@@ -53,7 +53,7 @@ when "redhat", "centos", "amazon"
     end
   end
 
-when "ubuntu"
+when "debian"
 
   package "apt-transport-https"
 
@@ -64,19 +64,6 @@ when "ubuntu"
     key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
     action :add
   end
-
-when "debian"
-
-  package "apt-transport-https"
-
-  apt_repository "boundary" do
-    uri "https://apt.boundary.com/debian/"
-    distribution node[:lsb][:codename]
-    components ["main"]
-    key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
-    action :add
-  end
-
 end
 
 cookbook_file "#{Chef::Config[:file_cache_path]}/cacert.pem" do
