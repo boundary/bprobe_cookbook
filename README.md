@@ -35,6 +35,20 @@ override_attributes({
 })
 ````
 
+##### Interfaces
+
+By default, bprobe listens on all interfaces. However, you can manually specify the interfaces you wish to monitor.
+
+````
+override_attributes({
+  :boundary       => {
+    :bprobe       => {
+      :interfaces => [ "eth0", "eth2" ]
+    }
+  }
+})
+````
+
 ##### Annotations
 
 You can create annotations in the Boundary dashboard using this cookbook as well. By default this cookbook will create an annotation on installing and uninstalling bprobe.
