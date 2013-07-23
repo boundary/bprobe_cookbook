@@ -25,3 +25,6 @@ default[:boundary][:bprobe][:collector][:hostname] = "collector.boundary.com"
 default[:boundary][:bprobe][:collector][:port] = "4740"
 
 default[:boundary][:bprobe][:tags] = []
+
+# The default is to listen on all interfaces
+default[:boundary][:bprobe][:interfaces] = nil
