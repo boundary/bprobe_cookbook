@@ -1,9 +1,10 @@
-#
 # Author:: Joe Williams (<j@boundary.com>)
+# Author:: Christian Vozar (<christian@bellycard.com>)
 # Cookbook Name:: bprobe
 # Resource:: annotation
 #
 # Copyright 2011, Boundary
+# Copyright 2013, Belly, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,14 +17,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 actions :create, :create_opsworks
-
-def initialize(*args)
-  super
-  @action = :create
-end
+default_action :create
 
 attribute :name, :kind_of => String, :name_attribute => true, :required => true
 attribute :subtype, :kind_of => String, :default => "chef"
