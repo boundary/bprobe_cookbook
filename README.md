@@ -49,22 +49,6 @@ override_attributes({
 })
 ````
 
-##### Annotations
-
-You can create annotations in the Boundary dashboard using this cookbook as well. By default this cookbook will create an annotation on installing and uninstalling bprobe.
-
-If you would like to create annotations at other times and in other cookbooks you need to depend on this one and use the `bprobe_annotation` LWRP. Something like the following:
-
-````
-bprobe_annotation "chef annotation" do
-  action :create
-  subtype "test"
-  tags ["tag1", "tag2"]
-end
-````
-
-You can find further examples in the `annotation.rb` recipe.
-
 ##### EC2
 
 This cookbook includes automatic detection and tagging of your meter with various EC2 attributes such as security group and instance type.
