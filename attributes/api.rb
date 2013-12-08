@@ -26,4 +26,4 @@ default[:boundary][:api][:org_id] = "yourid"
 # this is your api key (not the install token)
 default[:boundary][:api][:key] = "yourkey"
 
-default[:boundary][:fqdn] = node[:fqdn]
+default[:boundary][:hostname] = node[:fqdn]
