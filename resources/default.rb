@@ -25,4 +25,4 @@ def initialize(*args)
   @action = :create
 end
 
-attribute :name, :kind_of => String, :name_attribute => true, :required => true
+attribute :name, kind_of:  String, name_attribute: true, required: true
