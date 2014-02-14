@@ -21,8 +21,8 @@
 include Boundary::API
 
 action :install do
-  service "bprobe" do
-    action [ :nothing ]
+  service 'bprobe' do
+    action [:nothing]
   end
 
   download_certificate_request(new_resource)
@@ -50,25 +50,25 @@ private
 
 def download_certificate_request(new_resource)
   if ::File.exist?("#{node[:boundary][:bprobe][:etc][:path]}/cert.pem")
-    Chef::Log.debug("Certificate file already exists, not downloading.")
+    Chef::Log.debug('Certificate file already exists, not downloading.')
   else
     begin
-      auth = auth_encode()
+      auth = auth_encode
       base_url = build_url(new_resource, :certificates)
-      headers = {"Authorization" => "Basic #{auth}"}
+      headers = { 'Authorization' => "Basic #{auth}" }
 
       cert_response = http_request(:get, "#{base_url}/cert.pem", headers)
 
       if cert_response
         file "#{node[:boundary][:bprobe][:etc][:path]}/cert.pem" do
           mode 0600
-          owner "root"
-          group "root"
+          owner 'root'
+          group 'root'
           content cert_response.body
-          notifies :restart, resources(:service => 'bprobe')
+          notifies :restart, resources(service: 'bprobe')
         end
       else
-        Chef::Log.error("Could not download certificate (nil response)!")
+        Chef::Log.error('Could not download certificate (nil response)!')
       end
     rescue Exception => e
       Chef::Log.error("Could not download certificate, failed with #{e}")
@@ -78,25 +78,25 @@ end
 
 def download_key_request(new_resource)
   if ::File.exist?("#{node[:boundary][:bprobe][:etc][:path]}/key.pem")
-    Chef::Log.debug("Key file already exists, not downloading.")
+    Chef::Log.debug('Key file already exists, not downloading.')
   else
     begin
-      auth = auth_encode()
+      auth = auth_encode
       base_url = build_url(new_resource, :certificates)
-      headers = {"Authorization" => "Basic #{auth}"}
+      headers = { 'Authorization' => "Basic #{auth}" }
 
       key_response = http_request(:get, "#{base_url}/key.pem", headers)
 
       if key_response
         file "#{node[:boundary][:bprobe][:etc][:path]}/key.pem" do
           mode 0600
-          owner "root"
-          group "root"
+          owner 'root'
+          group 'root'
           content key_response.body
-          notifies :restart, resources(:service => 'bprobe')
+          notifies :restart, resources(service: 'bprobe')
         end
       else
-        Chef::Log.error("Could not download key (nil response)!")
+        Chef::Log.error('Could not download key (nil response)!')
       end
     rescue Exception => e
       Chef::Log.error("Could not download key, failed with #{e}")
