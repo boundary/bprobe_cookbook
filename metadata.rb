@@ -6,9 +6,10 @@ description      "Installs/Configures bprobe"
 long_description "Installs/Configures bprobe"
 version          "0.1"
 
-%w{ ubuntu debian rhel centos amazon scientific }.each do |os|
+%w{ ubuntu debian rhel centos amazon scientific windows }.each do |os|
   supports os
 end
 
 depends "yum"
 depends "apt"
+depends "windows"
