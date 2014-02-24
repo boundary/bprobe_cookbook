@@ -15,7 +15,7 @@ if node.platform_family?("windows")
 
   windows_package "#{display_name}" do
     source "https://windows.boundary.com/#{path}/bprobe-current.msi"
-    options "/l*v bprobe.log INSTALLTOKEN=2jUPQEHUZD6X9AMjCdGyaWQNUEP:8a8MHZXrCxLhKaxhPOKJSS42BA2"
+    options "/l*v bprobe.log INSTALLTOKEN=#{node[:boundary][:api][:org_id]}:#{node[:boundary][:api][:key]}"
     action :install
   end
 
