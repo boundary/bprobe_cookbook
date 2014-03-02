@@ -19,12 +19,12 @@
 #
 
 # delete the cert and key files on disk
-bprobe_certificates node[:fqdn] do
+bprobe_certificates node[:boundary][:hostname] do
   action :delete
 end
 
 # delete the meter from the boundary api
-bprobe node[:fqdn] do
+bprobe node[:boundary][:hostname] do
   action :delete
 end
 
@@ -35,4 +35,3 @@ end
 package "bprobe" do
   action :remove
 end
-
