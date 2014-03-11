@@ -30,6 +30,7 @@ action :create do
 
   apply_cloud_tags(new_resource)
   apply_meter_tags(new_resource)
+  node.roles.each { |role| apply_an_tag(new_resource, role) }
 
   new_resource.updated_by_last_action(true)
 end
