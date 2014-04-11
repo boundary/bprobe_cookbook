@@ -21,11 +21,6 @@
 case node[:platform_family]
 when "rhel"
 
-  yum_key "RPM-GPG-KEY-boundary" do
-    url "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
-    action :add
-  end
-
   # default to 64bit
   machine = "x86_64"
 
@@ -43,7 +38,7 @@ when "rhel"
   yum_repository "boundary" do
     description "boundary"
     url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
-    key "RPM-GPG-KEY-boundary"
+    gpgkey "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
     action :add
   end
 
