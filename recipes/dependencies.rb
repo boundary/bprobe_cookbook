@@ -37,7 +37,7 @@ when "rhel"
 
   yum_repository "boundary" do
     description "boundary"
-    url "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
+    baseurl "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
     gpgkey "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
     action :add
   end
