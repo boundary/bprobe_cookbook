@@ -18,6 +18,12 @@
 # limitations under the License.
 #
 
+default[:boundary][:bprobe][:yum][:uri] = "https://yum.boundary.com/centos/os/$releasever/$basearch/"
+default[:boundary][:bprobe][:yum][:key] = "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
+
+default[:boundary][:bprobe][:apt][:uri] = "https://apt.boundary.com/ubuntu/"
+default[:boundary][:bprobe][:apt][:key] = "https://apt.boundary.com/APT-GPG-KEY-Boundary"
+
 default[:boundary][:bprobe][:bin][:path] = "/usr/local"
 default[:boundary][:bprobe][:etc][:path] = "/etc/bprobe"
 

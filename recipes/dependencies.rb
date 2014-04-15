@@ -21,24 +21,10 @@
 case node[:platform_family]
 when "rhel"
 
-  # default to 64bit
-  machine = "x86_64"
-
-  case node[:kernel][:machine]
-  when "x86_64"
-    machine = "x86_64"
-  when "i686"
-    machine = "i386"
-  when "i386"
-    machine = "i386"
-  end
-
-  rhel_platform_version = node[:platform] == "amazon" ? "6" : node[:platform_version]
-
   yum_repository "boundary" do
     description "boundary"
-    baseurl "https://yum.boundary.com/centos/os/#{rhel_platform_version}/#{machine}/"
-    gpgkey "https://yum.boundary.com/RPM-GPG-KEY-Boundary"
+    baseurl node[:boundary][:bprobe][:yum][:uri]
+    gpgkey node[:boundary][:bprobe][:yum][:key]
     action :add
   end
 
@@ -47,10 +33,10 @@ when "debian"
   package "apt-transport-https"
 
   apt_repository "boundary" do
-    uri "https://apt.boundary.com/ubuntu/"
+    uri node[:boundary][:bprobe][:apt][:uri]
     distribution node[:lsb][:codename]
     components ["universe"]
-    key "https://apt.boundary.com/APT-GPG-KEY-Boundary"
+    key node[:boundary][:bprobe][:apt][:key]
     action :add
   end
 end
