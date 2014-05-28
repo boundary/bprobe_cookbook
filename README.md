@@ -4,7 +4,7 @@ This cookbook has two functions, the first is to install the Boundary bprobe dae
 
 #### Dependencies
 
-This cookbook depends on the `apt` and `yum` cookbooks from https://github.com/boundary/boundary_cookbooks The Opscode maintained versions of these cookbooks *should* also work.
+Dependencies and their requisite versions, when necessary, are specified in metadata.rb.
 
 #### Configuration Options
 
