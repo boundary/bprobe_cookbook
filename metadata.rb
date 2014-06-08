@@ -10,5 +10,5 @@ version          "0.2"
   supports os
 end
 
-depends "yum", "<= 2.4.4"
+depends "yum", ">= 3.0.0"
 depends "apt"
