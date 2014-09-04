@@ -1,6 +1,6 @@
 ## DEPRECATED - Unsupported
 
-New boundary meter cookbook is here (https://github.com/boundary/boundary-meter_cookbook)
+New boundary meter cookbook is here https://github.com/boundary/boundary-meter_cookbook
 
 ### The bprobe Cookbook
 
