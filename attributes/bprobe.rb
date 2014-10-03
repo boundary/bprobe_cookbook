@@ -19,7 +19,7 @@
 #
 
 default[:boundary][:bprobe][:bin][:path] = "/usr/local"
-default[:boundary][:bprobe][:etc][:path] = "/etc/bprobe"
+default[:boundary][:bprobe][:etc][:path] = "/etc/boundary"
 
 default[:boundary][:bprobe][:collector][:hostname] = "collector.boundary.com"
 default[:boundary][:bprobe][:collector][:port] = "4740"

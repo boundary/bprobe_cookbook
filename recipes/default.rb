@@ -41,11 +41,12 @@ bprobe_certificates node[:boundary][:hostname] do
 end
 
 # install the bprobe package
-package "bprobe" do
+package "boundary-meter" do
 end
 
 # start the bprobe service
 service "bprobe" do
+  service_name "boundary-meter"
   supports value_for_platform(
     "debian" => { "4.0" => [ :restart ], "default" => [ :restart ] },
     "ubuntu" => { "default" => [ :restart ] },
